@@ -56,6 +56,15 @@ function getTwatByUsername(username, offset, limit) {
         .data();
 }
 
+function getTwatByUsernames(usernames, offset, limit) {
+    return db.twats.chain()
+        .find({ 'username': { '$in': JSON.parse(usernames)} })
+        .simplesort('timestamp', true)
+        .offset(offset)
+        .limit(limit)
+        .data();
+}
+
 function getRecentTwats(offset, limit) {
     return db.twats.chain()
         .simplesort('timestamp', true)
@@ -72,6 +81,7 @@ module.exports = {
     getUUID,
     getRecentTwats,
     getTwatByUsername,
+    getTwatByUsernames,
     getTwatById,
     createTwat,
     initDB

@@ -1,9 +1,8 @@
 <script>
   import {
-    getUUID,
-    storeUUID,
     getUsername,
-    storeUsername
+    storeUsername,
+    initUUID
   } from "../_storage.js";
   import { onMount } from "svelte";
   let username = "";
@@ -11,17 +10,8 @@
   let userId = "";
 
   onMount(async () => {
-    userId = getUUID();
-    if (userId) {
-      username = getUsername();
-    } else {
-      fetch(`http://localhost:3030/getUUID`)
-        .then(res => res.json())
-        .then(uuidRes => {
-          storeUUID(uuidRes.id);
-          userId = uuidRes.id;
-        });
-    }
+    userId = await initUUID();
+    username = getUsername();
   });
 
   async function sendTweet() {
@@ -29,7 +19,6 @@
       `http://localhost:3030/createTwat?username=${username}&userId=${userId}&content=${content}`
     );
     const sendTweetObj = await res.json();
-    console.log(sendTweetObj)
     if (sendTweetObj.success) {
       const successEvent = new CustomEvent("twatSuccess", {});
       window.dispatchEvent(successEvent);
@@ -47,13 +36,36 @@
   compose {
     border: 0.5px solid #ccc;
     padding: 1em;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .username {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between
+  }
+
+  .content {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between
   }
 </style>
 
 <compose>
-  <input bind:value={username} on:change={updateUsername} />
-  <input bind:value={content} />
-  <button on:click={sendTweet}>send</button>
+  <div class=username>
+    <div>Twat under:</div>
+    <input bind:value={username} on:change={updateUsername} />
+  </div>
+  <div class=content>
+    <input bind:value={content} />
+    <button on:click={sendTweet}>send</button>
+  </div>
 
 </compose>
 

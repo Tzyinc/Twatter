@@ -1,10 +1,10 @@
-
 <script>
-  import Compose from '../components/Compose.svelte';
-  import TwatList from '../components/TwatList.svelte';
+  import Compose from "../components/Compose.svelte";
+  import TwatList from "../components/TwatList.svelte";
 </script>
 
 <style>
+
 </style>
 
 <!-- src/routes/blog/[slug].svelte -->

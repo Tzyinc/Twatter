@@ -49,6 +49,17 @@ app.get('/getTwatByUsername', function (req, res) {
     }
 });
 
+app.get('/getTwatByUsernames', function (req, res) {
+    const { usernames, offset = 0, limit = 10 } = req.query;
+    if (usernames) {
+        const twats = lokiDriver.getTwatByUsernames(usernames, offset, limit)
+        res.send({ success: true, twats })
+    } else {
+        res.send({ success: false })
+    }
+});
+
+
 
 app.get('/getTwatById', function (req, res) {
     const { twatid, offset = 0, limit = 10 } = req.query;
