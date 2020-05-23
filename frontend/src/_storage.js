@@ -2,6 +2,7 @@ let localStorage;
 let UUID = "";
 let username = "";
 let following = [];
+import { backendURL } from './_beroute'
 
 export function getUUID() {
     localStorage = window.localStorage;
@@ -21,9 +22,15 @@ export function getUsername() {
     return username;
 }
 
-export function storeUsername(username) {
+export function storeUsername(inputUsername) {
     localStorage = window.localStorage;
-    localStorage.setItem(UUID, username);
+
+    if (inputUsername !== username) {
+        localStorage.setItem(UUID, inputUsername);
+        username = inputUsername
+        const successEvent = new CustomEvent("usernameChanged", {});
+        window.dispatchEvent(successEvent);
+    }
 }
 
 export function getFollowing() {
@@ -40,16 +47,17 @@ export function storeFollowing(usernames) {
     localStorage = window.localStorage;
     localStorage.setItem(`${UUID}follows`, JSON.stringify(usernames));
     following = usernames;
+    const successEvent = new CustomEvent("twatFollow", {});
+    window.dispatchEvent(successEvent);
 }
 
 export async function initUUID() {
     let userId = getUUID();
-    console.log('userId', userId);
     if (!!userId) {
         username = getUsername();
         return userId;
     } else {
-        let res = await fetch(`http://localhost:3030/getUUID`)
+        let res = await fetch(`${backendURL}getUUID`)
         let uuidRes = await res.json();
         storeUUID(uuidRes.id);
         return uuidRes.id;

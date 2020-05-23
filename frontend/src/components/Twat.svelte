@@ -9,33 +9,68 @@
     storeFollowing
   } from "../_storage.js";
   import { onMount } from "svelte";
+  import Compose from "./Compose.svelte";
+  import { backendURL } from "../_beroute";
 
   let userId;
   let username;
   let following = [];
+  let followText = "";
+  let replyField = false;
+  let parentTwat;
+  let parentTwatTime = "";
+
   onMount(mountFn);
   async function mountFn() {
     userId = await initUUID();
     username = await getUsername();
+    await checkIsTwatByUser();
+    await fetchParentTwat();
+  }
+
+  async function checkIsTwatByUser() {
     following = await getFollowing();
+    if (following.findIndex(item => item === twat.username) !== -1) {
+      followText = "unfollow";
+    } else {
+      followText = "follow";
+    }
+    if (username === twat.username) {
+      followText = "";
+    }
+  }
+
+  async function fetchParentTwat() {
+    if (!!twat.parentid) {
+      let res = await fetch(`${backendURL}getTwatById?twatid=${twat.parentid}`);
+      let twatResponse = await res.json();
+      if (twatResponse.success && twatResponse.twats.length > 0) {
+          parentTwat = twatResponse.twats[0];
+          parentTwatTime = formatDate(parentTwat.timestamp);
+      }
+    }
   }
 
   function followName(followUser) {
     return function(event) {
       if (followUser !== username) {
         let followIndex = following.findIndex(user => user === followUser);
-
         if (followIndex === -1) {
           following.push(followUser);
         } else {
           following.splice(followIndex, 1);
         }
-
-        const successEvent = new CustomEvent("twatFollow", {});
-        window.dispatchEvent(successEvent);
         storeFollowing(following);
       }
     };
+  }
+
+  function activateReply() {
+    replyField = true;
+  }
+
+  function exitReply() {
+    replyField = false;
   }
 
   function formatDate(timestamp) {
@@ -109,6 +144,10 @@
   }
 </style>
 
+<svelte:window
+  on:usernameChanged={checkIsTwatByUser}
+  on:twatFollow={checkIsTwatByUser} />
+
 <twatCont>
   <div class="top">
     <div>
@@ -118,9 +157,29 @@
     <div class="time">{time}</div>
   </div>
   <div class="content">{twat.content}</div>
-  <div>
-    <button on:click={followName(twat.username)}>follow</button>
+  {#if parentTwat !== undefined}
+  <div class="parent"> <div class="top">
+    <div>
+      <div class="name">{parentTwat.username}</div>
+      <div class="id">{parentTwat.userId}</div>
+    </div>
+    <div class="time">{parentTwatTime}</div>
   </div>
+  <div class="content">{parentTwat.content}</div></div>
+  {/if}
+  <div>
+    <button on:click={activateReply}>reply</button>
+    {#if !!followText}
+      <button on:click={followName(twat.username)}>{followText}</button>
+    {/if}
+  </div>
+
+  {#if !!replyField}
+    <div>
+      <button on:click={exitReply}>exit</button>
+      <Compose parentTwat={twat.twatId} {exitReply} />
+    </div>
+  {/if}
 </twatCont>
 
 <!-- twatId: uuidv4(),

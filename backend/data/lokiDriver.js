@@ -43,7 +43,7 @@ function getTwatById(twatid, offset, limit) {
         .find({ 'twatId': twatid })
         .simplesort('timestamp', true)
         .offset(offset)
-        .limit(limit)
+        .limit(limit + 1)
         .data();
 }
 
@@ -52,7 +52,7 @@ function getTwatByUsername(username, offset, limit) {
         .find({ 'username': username })
         .simplesort('timestamp', true)
         .offset(offset)
-        .limit(limit)
+        .limit(limit + 1)
         .data();
 }
 
@@ -61,7 +61,7 @@ function getTwatByUsernames(usernames, offset, limit) {
         .find({ 'username': { '$in': JSON.parse(usernames)} })
         .simplesort('timestamp', true)
         .offset(offset)
-        .limit(limit)
+        .limit(limit + 1)
         .data();
 }
 
@@ -69,7 +69,7 @@ function getRecentTwats(offset, limit) {
     return db.twats.chain()
         .simplesort('timestamp', true)
         .offset(offset)
-        .limit(limit)
+        .limit(limit + 1)
         .data();
 }
 
