@@ -4,7 +4,7 @@
 </style>
 
 <logo>
-    <svg width="40" height="40" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+    <svg width="30" height="30" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
     <!-- Created with Method Draw - http://github.com/duopixel/Method-Draw/ -->
     <g>
     <path id="svg_1" d="m70.646573,37.556435l0,-20.449438l27.640448,20.449438l-27.640448,0z" stroke-width="0" stroke="#000" fill="#1ea1f2"/>

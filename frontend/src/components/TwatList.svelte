@@ -92,18 +92,34 @@
 </script>
 
 <style>
+  .notFollowing {
+    width: 100%;
+    min-height: calc(100vh - 3em - 5px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+  }
+  .seeMore {
 
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
 </style>
 
 <svelte:window on:twatSuccess={twatSuccess} on:twatFollow={twatSuccess} />
 {#if path === '/following' && following.length <= 0}
-  <div>
-    you are not following anybody follow by adding people from the home page
+  <div class="notFollowing">
+    You are not following anybody! Follow by adding people from the home page!
   </div>
 {/if}
 {#each twats as twat}
   <Twat {twat} />
 {/each}
 {#if hasMore}
-  <div on:click={fetchMore}>see more</div>
+  <div class="seeMore">
+    <button on:click={fetchMore}>see more</button>
+  </div>
 {/if}

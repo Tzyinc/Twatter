@@ -29,6 +29,8 @@
   }
 
   async function checkIsTwatByUser() {
+    userId = await initUUID();
+    username = await getUsername();
     following = await getFollowing();
     if (following.findIndex(item => item === twat.username) !== -1) {
       followText = "unfollow";
@@ -45,8 +47,8 @@
       let res = await fetch(`${backendURL}getTwatById?twatid=${twat.parentid}`);
       let twatResponse = await res.json();
       if (twatResponse.success && twatResponse.twats.length > 0) {
-          parentTwat = twatResponse.twats[0];
-          parentTwatTime = formatDate(parentTwat.timestamp);
+        parentTwat = twatResponse.twats[0];
+        parentTwatTime = formatDate(parentTwat.timestamp);
       }
     }
   }
@@ -137,10 +139,31 @@
 
   .time {
     padding: 0.5em;
+    color: #ccc;
   }
-  .content {
-    width: 100%;
+  .twatContent {
+    width: calc(100% - 1em);
+    word-break: break-all;
     padding: 0.5em;
+  }
+  .parent {
+    width: calc(100% - 2em - 1px);
+    margin: 1em;
+    border: 0.5px solid #ccc;
+  }
+  .replyField {
+    width: calc(100% - 2em - 1px);
+    margin: 1em;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  .exitButton {
+    background-color: red;
+    align-self: flex-end;
+    margin-bottom: -3em;
+    z-index: 2;
   }
 </style>
 
@@ -156,16 +179,18 @@
     </div>
     <div class="time">{time}</div>
   </div>
-  <div class="content">{twat.content}</div>
+  <div class="twatContent">{twat.content}</div>
   {#if parentTwat !== undefined}
-  <div class="parent"> <div class="top">
-    <div>
-      <div class="name">{parentTwat.username}</div>
-      <div class="id">{parentTwat.userId}</div>
+    <div class="parent">
+      <div class="top">
+        <div>
+          <div class="name">{parentTwat.username}</div>
+          <div class="id">{parentTwat.userId}</div>
+        </div>
+        <div class="time">{parentTwatTime}</div>
+      </div>
+      <div class="twatContent">{parentTwat.content}</div>
     </div>
-    <div class="time">{parentTwatTime}</div>
-  </div>
-  <div class="content">{parentTwat.content}</div></div>
   {/if}
   <div>
     <button on:click={activateReply}>reply</button>
@@ -175,8 +200,8 @@
   </div>
 
   {#if !!replyField}
-    <div>
-      <button on:click={exitReply}>exit</button>
+    <div class="replyField">
+      <button class="exitButton" on:click={exitReply}>✕</button>
       <Compose parentTwat={twat.twatId} {exitReply} />
     </div>
   {/if}

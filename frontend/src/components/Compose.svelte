@@ -16,23 +16,25 @@
   }
 
   async function sendTweet() {
-    let res;
-    if (!parentTwat) {
-      res = await fetch(
-        `${backendURL}createTwat?username=${username}&userId=${userId}&content=${content}`
-      );
-    } else {
-      res = await fetch(
-        `${backendURL}createTwat?username=${username}&userId=${userId}&content=${content}&parentid=${parentTwat}`
-      );
-    }
-    const sendTweetObj = await res.json();
-    if (sendTweetObj.success) {
-      if (typeof exitReply === "function") {
-        exitReply();
+    if (content.trim().length > 0 && content.trim().length <= 144) {
+      let res;
+      if (!parentTwat) {
+        res = await fetch(
+          `${backendURL}createTwat?username=${username}&userId=${userId}&content=${content}`
+        );
+      } else {
+        res = await fetch(
+          `${backendURL}createTwat?username=${username}&userId=${userId}&content=${content}&parentid=${parentTwat}`
+        );
       }
-      const successEvent = new CustomEvent("twatSuccess", {});
-      window.dispatchEvent(successEvent);
+      const sendTweetObj = await res.json();
+      if (sendTweetObj.success) {
+        if (typeof exitReply === "function") {
+          exitReply();
+        }
+        const successEvent = new CustomEvent("twatSuccess", {});
+        window.dispatchEvent(successEvent);
+      }
     }
   }
 
@@ -45,10 +47,11 @@
 <style>
   compose {
     border: 0.5px solid #ccc;
+    width: calc(100% - 2em - 2px);
     padding: 1em;
     display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: flex-start;
     justify-content: center;
   }
 
@@ -59,13 +62,32 @@
     justify-content: space-between;
   }
 
-  .content {
+  .twatInput {
+    width: 100%;
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     align-items: center;
     justify-content: space-between;
-    word-wrap: break-word;
+  }
+  .alias {
+    margin-right: 0.5em;
+  }
+  .textArea {
     width: 100%;
+    min-width: 100%;
+  }
+  .twatButton {
+    display: flex;
+    flex-direction: row;
+    align-self: flex-end;
+    align-items: center;
+    justify-content: center;
+  }
+  .red {
+    color: red;
+  }
+  .grey {
+    background-color: #999;
   }
 </style>
 
@@ -73,12 +95,17 @@
 
 <compose>
   <div class="username">
-    <div>Twat under:</div>
+    <div class="alias">Twat Alias:</div>
     <input bind:value={username} on:change={updateUsername} />
   </div>
-  <div class="content">
-    <input bind:value={content} />
-    <button on:click={sendTweet}>send</button>
+  <div class="twatInput">
+    <textarea placeholder="twat it!" class="textArea" bind:value={content} />
+    <div class="twatButton">
+      <div class={content.trim().length > 144 ? 'red' : ''}>{content.trim().length}/144</div>
+      <button class={content.trim().length > 144 ? 'grey' : ''} on:click={sendTweet}>
+        Twat
+      </button>
+    </div>
   </div>
 
 </compose>
