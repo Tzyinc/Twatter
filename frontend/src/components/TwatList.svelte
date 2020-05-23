@@ -115,7 +115,7 @@
     You are not following anybody! Follow by adding people from the home page!
   </div>
 {/if}
-{#each twats as twat}
+{#each twats as twat(twat.twatId)}
   <Twat {twat} />
 {/each}
 {#if hasMore}
