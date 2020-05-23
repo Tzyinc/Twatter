@@ -1,1 +1,1 @@
-export const backendURL = 'http://localhost:3030/'
+export const backendURL = 'https://twatterbe.tenzhiyang.com:3030/'
